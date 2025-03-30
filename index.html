@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Site</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/svg+xml" href="./assets/alex.JPG" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword,updateProfile, signInWithEmailAndPassword,signOut  } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot,doc, setDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfPZwwM8Nwx_cC-tNADQdIQF0epEqew20",
+            authDomain: "weather-site-cec60.firebaseapp.com",
+            projectId: "weather-site-cec60",
+            storageBucket: "weather-site-cec60.firebasestorage.app",
+            messagingSenderId: "514429115577",
+            appId: "1:514429115577:web:2ecc8526ec563a6774cf68"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        window.signUp = async () => {
+    try {
+        const username = document.getElementById("username").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value.trim();
+        
+        if (!username || !email || !password) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        // Validate email format
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            alert("Invalid email format.");
+            return;
+        }
+
+        // Ensure password meets Firebase requirements (at least 6 characters)
+        if (password.length < 6) {
+            alert("Password must be at least 6 characters long.");
+            return;
+        }
+
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+         // **Update Firebase Authentication Profile with Display Name**
+         await updateProfile(user, { displayName: username });
+
+          // **Save User Data in Firestore**
+        await setDoc(doc(db, "users", user.uid), {
+            uid: user.uid,
+            username: username,
+            email: email,
+            createdAt: new Date(),
+        });
+        
+         const currentUser = { uid: userCredential.user.uid, name: username };
+        localStorage.setItem("chatUser", JSON.stringify(currentUser));
+        console.log("User created:", currentUser);
+        alert(`User Created Successfully! Welcome, ${username}`);
+
+         // **Change Signup/Login to "Hi, Username"**
+         document.getElementById("nav-auth").innerText = `Hi, ${username}`;
+         // **Show and Hide Elements**
+        const getDiv = document.getElementById("get");
+        const fetchDiv = document.getElementById("fetch");
+
+        if (getDiv) getDiv.style.display = "none";
+        if (fetchDiv) fetchDiv.style.display = "flex";
+         // Close the menu by unchecking the menu button checkbox
+         document.querySelector(".menu-btn").checked = false;
+    } catch (error) {
+        console.error("Signup Error:", error);
+        alert(`Error: ${error.message}`);
+    }
+};
+    
+        window.signIn = async () => {
+    try {
+        const emailInput = document.getElementById("emaill");
+        const passwordInput = document.getElementById("passwordd");
+
+        if (!emailInput || !passwordInput) {
+            console.error("Email or Password input field not found!");
+            return;
+        }
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        if (!email || !password) {
+            alert("Please enter your email and password.");
+            return;
+        }
+
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Fetch user display name from Firebase
+        let username = user.displayName || "User";
+
+        console.log("User signed in:", user);
+        alert(`Welcome back, ${username}!`);
+
+        // **Update Navigation Bar**
+        const navAuth = document.getElementById("nav-auth");
+        if (navAuth) {
+            navAuth.innerText = `Hi, ${username}`;
+        }
+
+        // **Show and Hide Elements**
+        document.getElementById("get").style.display = "none";
+        document.getElementById("fetch").style.display = "flex";
+
+        // **Close the menu**
+        const menuBtn = document.querySelector(".menu-btn");
+        if (menuBtn) {
+            menuBtn.checked = false;
+        }
+
+    } catch (error) {
+        console.error("Sign-in Error:", error);
+        alert(`Error: ${error.message}`);
+    }
+};
+
+
+ window.logOut = async () => {
+     try {
+         await signOut(auth);
+         alert("Logged out successfully!");
+         document.getElementById("nav-auth").innerText = "Sign Up / Login";
+         document.getElementById("fetch").style.display = "none";
+         document.getElementById("get").style.display = "flex";
+     } catch (error) {
+         console.error("Logout Error:", error);
+         alert(`Error: ${error.message}`);
+     }
+ };
+    </script>   
+<script defer src="script.js"></script>
+</head>
+<body>
+    <nav class="navigat" id="get">
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon">
+            <span class="nav-icon"></span>
+        </label>
+
+        <div class="profile-container">
+            <span id="nav-autf">Sign Up / Login</span>
+        </div>
+
+        <ul class="menu">
+            <div class="wrapper" id="fave">
+                <div>
+                  <h2>Signup</h2>
+                  <div class="input-field">
+                    <input id="username" type="text" required>
+                    <label>Enter your Username</label>
+                  </div>
+                    <div class="input-field">
+                    <input id="email"  type="text" required>
+                    <label>Enter your email</label>
+                  </div>
+                  <div class="input-field">
+                    <input id="password" type="password" required>
+                    <label>Enter your password</label>
+                  </div>
+                  <div class="forget">
+                    <label for="remember">
+                      <input type="checkbox" id="remember">
+                      <p>Remember me</p>
+                    </label>
+                  </div>
+                  <button onclick="signUp()">Sign Up</button>
+                  <div class="register">
+                    <button onclick="toggleDivs()"><p>Already have an account? Signin</p></button>
+                  </div>
+                </div>
+            </div>
+            <div class="wrapper" id="dave">
+                <div>
+                  <h2>Signin</h2>
+                    <div class="input-field">
+                    <input id="emaill"  type="text" required>
+                    <label>Enter your email</label>
+                  </div>
+                  <div class="input-field">
+                    <input id="passwordd" type="password" required>
+                    <label>Enter your password</label>
+                  </div>
+                  <div class="forget">
+                    <label for="remember">
+                      <input type="checkbox" id="remember">
+                      <p>Remember me</p>
+                    </label>
+                    <a href="#">Forgot password?</a>
+                  </div>
+                  <button onclick="signIn()">Sign in</button>
+                  <div class="register">
+                    <button onclick="toggleDiv()"><p>Don't have an account? Signup</p></button>
+                  </div>
+                </div>
+            </div>
+        </ul>
+    </nav>
+    <nav class="navigate" id="fetch">
+        <input type="checkbox" class="menu-btnf" id="menu-btnf">
+        <label for="menu-btnf" class="menu-iconf">
+            <span class="nav-iconf"></span>
+        </label>
+
+        <div class="profile-container">
+            <span id="nav-auth"></span>
+        </div>
+
+        <ul class="menuf">
+            <div class="wrapper" id="p">
+                <div>
+                  <h2>See You Again</h2>
+                  <button onclick="logOut()">LogOut</button>
+                </div>
+            </div>
+        </ul>
+    </nav>
+    <div class="clouds">
+        <img src="assets/p.png" class="cloud cloud1">
+        <img src="assets/i.png" class="cloud cloud2">
+        <img src="assets/2.png" class="cloud cloud3">
+    </div>
+    <div id="rain-container"></div>
+    
+    <div class="look">
+        <div class="kax">
+            <div class="container">
+                <h1 class="app-title">Weather App</h1>
+                <div class="search-box">
+                    <input type="text" id="cityInput" placeholder="Enter city name..." />
+                    <button id="searchBtn">Search</button>
+                </div>
+            </div>
+            <div class="weather-container">
+                <div class="weather-ihnfo more" id="current-weather">
+                    
+                        <div>
+                            <img src="assets/statue-of-liberty.png" alt="" width="170px">
+                        </div>
+                    
+                   <div>
+                    <div class="leff">
+                        <h3 id="temperature"></h3>
+                        <p id="description"></p>
+                    </div>
+                    <div class="leff">
+                        <h2 id="cityName"></h2>
+                    </div>
+                    <div class="gas">
+                        <div>
+                            <img id="weatherIcon" class="">
+                        </div>
+                        <div>
+                            <h6><span id="windSpeed"></span></h6>
+                            <h6><span id="humidity"></span></h6>
+                        </div>
+                    </div>
+                   </div>
+                </div>
+                <div class="base" id="base"></div>
+                <div class="mofe">
+                    <button id="toggle-btn">More Info</button>
+                    <button class="kasf"><a class="jas" href="chat.html">Chat Room</a></button>
+                </div>
+                <div class="weather-info mor" id="future-forecast">
+                    <h3>Future Days Forecast</h3>
+                    <div class="day">Monday - ☁️ Overcast Clouds - 30°C</div>
+                    <div class="day">Tuesday - ☀️ Sunny - 32°C</div>
+                    <div class="day">Wednesday - 🌧️ Rain - 29°C</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const div1 = document.getElementById("fave");
+        const div2 = document.getElementById("dave");
+        function toggleDivs() {
+    
+
+    if (div1 && div2) {
+        div1.style.display = "none";  // Hide div1
+        div2.style.display = "flex";  // Show div2
+    } else {
+        console.warn("One or both divs not found!");
+    }
+}
+function toggleDiv() {
+
+    if (div1 && div2) {
+        div1.style.display = "flex";  // Hide div1
+        div2.style.display = "none";  // Show div2
+    } else {
+        console.warn("One or both divs not found!");
+    }
+}
+    </script>
+</body>
+
+</html>

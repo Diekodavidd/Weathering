@@ -1,0 +1,992 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* body {
+    background: linear-gradient(to right, #74ebd5, #acb6e5);
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+} */
+body {
+    margin: 0;
+    overflow: hidden;
+    background: url(./assets/pic.jpg) 0% 0% / cover no-repeat;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.kax{
+    justify-self: center;
+    justify-items: center;
+    align-items: center;
+    padding: 5px;
+    width: 97%;
+    height: 100%;
+}
+.gas{
+    display: flex;
+    justify-content: right;
+}
+.weather-container {
+    position: relative;
+    width: 100%;
+    max-width: 90%;
+    perspective: 1000px;
+    margin-top: 330px;
+    margin-left: 100px;
+    height: max-content;
+    background-color: transparent;
+}
+/* Background Clouds */
+.clouds {
+    position: absolute;
+    width: 100%;
+    height: 20vh;
+    top: 5%;
+    z-index: -1;
+}
+
+.cloud {
+    position: absolute;
+    width: 200px;
+    opacity: 0.8;
+    animation: moveClouds 15s linear infinite;
+}
+
+.cloud1 {
+    left: -200px;
+    animation-duration: 25s;
+}
+
+.cloud2 {
+    left: 100vw;
+    animation-duration: 20s;
+}
+
+@keyframes moveClouds {
+    from {
+        transform: translateX(-250px);
+    }
+    to {
+        transform: translateX(100vw);
+    }
+}
+
+/* Raindrops */
+#rain-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.rain {
+    position: absolute;
+    width: 2px;
+    height: 15px;
+    background: rgba(255, 255, 255, 0.6);
+    animation: fall linear infinite;
+}
+
+@keyframes fall {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(100vh);
+    }
+}
+
+.base {
+clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
+background-color: rgb(51, 51, 51);
+bottom: -0px;
+/* position: absolute; */
+transform: rotateX(168deg) translateZ(150px);
+z-index: 1;
+height: 152px;
+max-height: 350px;
+/* max-width: 100%; */
+width: 90%;
+left: 0px;
+}
+
+#toggle-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+.kasf{
+        background: rgba(255, 255, 255, 0.3);
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 50%;
+}
+
+.jas{
+    color: inherit;
+    text-decoration: none;
+}
+.mofe{
+    position: absolute;
+    margin-left: 700px;
+    z-index: 5;
+    margin-top: -90px;
+    width: fit-content;
+}
+.weather-info {
+    position: absolute;
+    bottom: -79px;
+    transform: translateX(-50%);
+    width: 557px;
+    /* clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%); */
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.863);
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    margin-left: 5px;
+    backface-visibility: hidden;
+    height: 300px;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.weather-ihnfo {
+    position: absolute;
+    top: -100px;
+    transform: translateX(-50%);
+    width: 279px;
+    /* clip-path: polygon(0% 0%, 100% 0%, 90% 100%, 10% 100%); */
+    padding: 15px;
+    background: transparent;
+    border-radius: 10px;
+    color: rgb(0, 0, 0);
+    text-align: right;
+    margin-left: 95px;
+    z-index: 40;
+    display: flex;
+    backface-visibility: hidden;
+    height: 200px;
+    transition: opacity 0.3s ease-in-out;
+}
+#future-forecast {
+    transform-origin: bottom;
+    transform: rotateX(-90deg);
+    opacity: 0;
+   right: 50%;
+    transition: transform 0.5s ease-in-out, opacity 0.5s ease-in-out;
+}
+
+.more{
+    left: 39%;
+    top: -110%;
+}
+.look{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+}
+.waq{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: flex-start;
+    color: lightgreen;
+}
+.aeriel{
+    width: 25%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* background-color: yellow; */
+}
+.paul{
+    width: 50%;
+    background-color: transparent;
+}
+.looker{
+    width: 80%;
+    height: 95%;
+    display: flex;
+    justify-self: center;
+    justify-content: center;
+    margin-top: 15px;
+    align-items: center;
+    padding: 15px;
+    background-color:transparent;
+}
+.mor{
+    left: 21%;
+    top: -200%;
+}
+.day {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+.container {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 20px;
+    border-radius: 15px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    width: 350px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+    /* margin-left: 70px; */
+}
+
+.app-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 0px;
+}
+
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.search-box input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.search-box button {
+    padding: 10px;
+    border: none;
+    background: #ff7eb3;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* .weather-info {
+    display: none;
+    margin-top: 20px;
+} */
+
+.weather-info h2 {
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.weather-info img, .weather-ihnfo img {
+    /* width: 80px; */
+    /* height: 80px; */
+    margin: 10px 0;
+}
+.leff{
+    text-align: left;
+}
+.weather-ihnfo img {
+    justify-self: left;
+    border: none;
+}
+.weather-info p {
+    font-size: 18px;
+    margin: 5px 0;
+}
+.chat-containe {
+    width: 100%;
+    height: 90%;
+    background: #223E4C;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    text-align: center;}
+
+.chat-container {
+    width: 100%;
+    height: 90%;
+    background: #223E4C;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    text-align: center;
+    display: none;
+}
+.chat-box {
+    height: 75%;
+    overflow-y: auto;
+    border: 1px solid lightblue;
+    padding: 10px 5px;
+    margin-bottom: 10px;
+    background: #D1D3D1;
+    text-align: left;
+    border-radius: 15px;
+}
+#fade p{
+    font-size: 20px;
+}
+/* width */
+.chat-box::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  /* Track */
+  .chat-box::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+  }
+   
+  /* Handle */
+  .chat-box::-webkit-scrollbar-thumb {
+    background: transparent; 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  .chat-box::-webkit-scrollbar-thumb:hover {
+    background: #151535; 
+  }
+.sss{
+    color: black;
+    padding: 3px;
+}
+#fader{
+    text-align: center;
+    margin-bottom: 5px;
+}
+#fade{
+    text-align: center;
+    margin-bottom: 15px;
+}
+.spr{
+    color: gold;
+    font-size: 14px;
+}
+.chat-container {
+    display: none; /* Hide chat container initially */
+    position: relative;
+}
+.ddd{
+    color: black;
+    position: absolute;
+    top: 20px;
+    right: 10px;
+    background-color: red;
+    padding: 2px;
+}
+.hhhh{
+    display: flex;
+    text-align: center;
+    width: 100%;
+    justify-content: center;
+}
+.ssw{
+    margin-top: -30px;
+    /* margin-left: 200px; */
+    justify-self: center;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hhh{
+    display: flex;
+    width: max-content;
+    height: max-content;
+    padding: 5px;
+    background-color: firebrick;
+    border-radius: 9px;
+}
+.hhh p{
+    font-size: 13px;
+    margin-top: 3px;
+    margin-left: 5px;
+}
+.summer, .sprig, .witer, .autum{cursor: pointer;}
+.message {
+    padding: 5px;
+    margin: 5px 0;
+    background: #d0d5cc;
+    border-radius: 5px;
+    text-align: left;
+}
+input {
+    width: 80%;
+    padding: 5px;
+    background-color: #D1D3D1;
+    border: none;
+    border-radius: 3px;
+}
+button {
+    padding: 5px 10px;
+    margin-left: 5px;
+    cursor: pointer;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 3px;
+}
+.image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-top: 90px;
+    
+}
+.cloud-container {
+    width: 300px;
+    height: 200px;
+    background: white;
+    border-radius: 90% 90% 80% 80%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0px 10px 10px rgba(78, 165, 168, 0.1);
+    overflow: hidden;
+}
+.cloud-container::before, .cloud-container::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+}
+.cloud-container::before {
+    width: 130px;
+    height: 130px;
+    top: -50px;
+    left: 40px;
+}
+
+.summer-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.summer-image2 {
+    position: absolute;
+    width: 100%;
+    height: 120%;
+    margin-top: 40px;
+    /* object-fit: cover; */
+}
+#fade{
+    color: black;
+    width: 70%;
+}
+.summer-image3 {
+    position: absolute;
+    width: 100%;
+    height: 120%;
+    margin-top: 40px;
+    /* object-fit: cover; */
+}
+.summer-image4 {
+    position: absolute;
+    width: 140%;
+    height: 150%;
+    margin-top: 60px;
+    /* object-fit: cover; */
+}
+/* .profile-container { */
+    /* position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); */
+/* } */
+.profile-container img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+.profile-container a {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+
+/* The Nav  */
+.navigat{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding: 30px 50px;
+    margin: auto;
+    top: 10px;
+    position: absolute;
+    right: 40px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navigat .menu-icon{cursor: pointer;float: right;padding: 20px 10px;z-index: 107;}
+.navigat .menu-icon .nav-icon{
+    background-color: brown;
+    display: block;
+    height: 2px;
+    width: 25px;
+    position: relative;
+    transition: backgroud 0.2s ease-out;
+}
+.navigat .menu-icon .nav-icon::before,
+.navigat .menu-icon .nav-icon::after{
+    background-color: blueviolet;
+    content: '';
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: all ease-out 0.2s;
+}
+.navigat .menu-icon .nav-icon::before{
+    top: 8px;
+}
+.navigat .menu-icon .nav-icon::after{
+    top: -8px;
+}
+.navigat .menu-btn:checked ~ .menu-icon .nav-icon{
+    background-color: transparent;
+}
+.navigat .menu-btn:checked ~ .menu-icon .nav-icon::before{
+    transform: rotate(-45deg);
+    top: 0px;
+}
+.navigat .menu-btn:checked ~ .menu-icon .nav-icon::after{
+    transform: rotate(45deg);
+    top: 0px;
+}
+.menu-btn{
+    display: none;
+}
+.menu-btnf{
+    display: none;
+}
+#dave{
+    display: none;
+}
+#get{
+    display: flex;
+}
+#fetch{
+    display: none;
+}
+.menu{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #111111f1;
+    z-index: 106;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    animation: fade 0.3s;
+}
+.menuf{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: #111111f1;
+    z-index: 106;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    animation: fade 0.3s;
+}
+.menu li a, .menuf li a{
+    color: white;
+    margin: 0px 40px;
+    font-size: 18px;
+    font-family: monoton;
+    transition: all ease 0.3s;
+}
+.menu li a:hover, .menuf li a:hover{
+    color: coral;
+    font-size: 20px;
+    transition: all ease 0.3s;
+}
+
+.navigat .menu-btn:checked ~ .menu{
+    display: flex;
+}
+
+.navigate .menu-btnf:checked ~ .menuf{
+    display: flex;
+}
+.navigate{
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    padding: 30px 50px;
+    margin: auto;
+    top: 10px;
+    position: absolute;
+    right: 10px;
+    background: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.navigate .menu-iconf{cursor: pointer;float: right;padding: 20px 10px;z-index: 107;}
+.navigate .menu-iconf .nav-iconf{
+    background-color: brown;
+    display: block;
+    height: 2px;
+    width: 25px;
+    position: relative;
+    transition: backgroud 0.2s ease-out;
+}
+.navigate .menu-iconf .nav-iconf::before,
+.navigate .menu-iconf .nav-iconf::after{
+    background-color: blueviolet;
+    content: '';
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 100%;
+    transition: all ease-out 0.2s;
+}
+.navigate .menu-iconf .nav-iconf::before{
+    top: 8px;
+}
+.navigate .menu-iconf .nav-iconf::after{
+    top: -8px;
+}
+.navigate .menu-btnf:checked ~ .menu-iconf .nav-iconf{
+    background-color: transparent;
+}
+.navigate .menu-btnf:checked ~ .menu-iconf .nav-iconf::before{
+    transform: rotate(-45deg);
+    top: 0px;
+}
+.navigate .menu-btnf:checked ~ .menu-iconf .nav-iconf::after{
+    transform: rotate(45deg);
+    top: 0px;
+}
+@keyframes fade{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
+}
+
+.wrapper {
+    width: 400px;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #fff;
+  }
+  .input-field {
+    position: relative;
+    border-bottom: 2px solid #ccc;
+    margin: 15px 0;
+  }
+  .input-field label {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    color: #fff;
+    font-size: 16px;
+    pointer-events: none;
+    transition: 0.15s ease;
+  }
+  .input-field input {
+    width: 100%;
+    height: 40px;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: #fff;
+  }
+  .input-field input:focus~label,
+  .input-field input:valid~label {
+    font-size: 0.8rem;
+    top: 10px;
+    transform: translateY(-120%);
+  }
+  .forget {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 25px 0 35px 0;
+    color: #fff;
+  }
+  #remember {
+    accent-color: #fff;
+  }
+  .forget label {
+    display: flex;
+    align-items: center;
+  }
+  .forget label p {
+    margin-left: 8px;
+  }
+  .wrapper a {
+    color: #efefef;
+    text-decoration: none;
+  }
+  .wrapper a:hover {
+    text-decoration: underline;
+  }
+  button {
+    background: #fff;
+    color: #000;
+    font-weight: 600;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 3px;
+    font-size: 16px;
+    border: 2px solid transparent;
+    transition: 0.3s ease;
+  }
+  button:hover {
+    color: #fff;
+    border-color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+  }
+  .register {
+    text-align: center;
+    margin-top: 30px;
+    color: #fff;
+  }
+@media (max-width:1150px) {
+    .navigat{
+        right: 20px;
+    }
+    .mofe{
+        margin-left: 550px;
+    }
+    .weather-info{
+        width: 477px;
+    }
+    .cloud-container{
+        width: 220px;
+    }
+}
+@media (max-width:1000px) {
+    .navigat{
+        right: 10px;
+    }
+    .more {
+        width: 50%;
+        left: 32%;
+        top: -120%;
+    }
+    .mofe{
+        margin-left: 430px;
+    }
+    .weather-info{
+        width: 405px;
+    }
+    .cloud-container{
+        width: 100px;
+        height: 100px;
+    }
+    .aeriel{
+        width: 15%;
+        height: 100%;
+        margin-bottom: 50px;
+    }
+    .ssw{
+        margin-top: 40px;
+    }
+    .paul{
+        width: 70%;
+    }
+    .chat-container{
+        height: 120%;
+    }
+    .chat-containe{
+        height: 80%;
+    }
+    .chat-containe input{
+        justify-self: left;
+    }
+}
+@media (max-width:800px) {
+    .weather-container{
+        margin-left: 0px;
+    }
+    .navigat{
+        right: 10px;
+    }
+    .more {
+        width: 50%;
+        left: 32%;
+        top: -120%;
+    }
+    .mofe{
+        margin-left: 420px;
+    }
+    .weather-info{
+        width: 305px;
+    }
+    .base{
+        width: 110%;
+        margin-right: 50px;
+    }
+}
+@media (max-width:600px) {
+    .weather-container{
+        margin-left: -20px;
+    }
+    .navigat{
+        right: 10px;
+    }
+    .more {
+        width: 50%;
+        left: 16%;
+        top: -120%;
+    }
+    .mofe{
+        margin-top: -37px;
+        margin-left: 250px;
+        display: flex;
+    }
+    .weather-info{
+        width: 305px;
+    }
+    .base{
+        width: 110%;
+        margin-right: 50px;
+    }
+    .profile-container span{
+        display: none;
+    }
+    .container{
+        width: 290px;
+    }
+}
+@media (max-width:500px) {
+    .weather-container{
+        margin-left: -120px;
+    }
+    .navigat{
+        right: 10px;
+    }
+    .looker{
+        width: 100%;
+    }
+    .chat-container{
+        height: 105%;
+    }
+    .chat-containe{
+        height: 75%;
+    }
+    #fader p{
+        margin-block-start: 0em;
+    margin-block-end: 0em;
+    }
+    #fade{
+        width: 90%;
+    }
+    #fader{
+        display: flex;
+        justify-content: left;
+        text-align: left;
+        width: 100%;
+    }
+    .more {
+        width: 50%;
+        left: 16%;
+        top: -120%;
+    }
+    .mofe{
+        margin-top: -37px;
+        margin-left: 150px;
+        display: flex;
+    }
+    .weather-info{
+        width: 305px;
+    }
+    .base{
+        width: 135%;
+        margin-right: 50px;
+    }
+   
+    .container{
+        width: 250px;
+    }
+}
+@media (max-width:452px) {
+    .weather-container{
+        margin-left: -120px;
+    }
+    .navigat{
+        right: 10px;
+    }
+    .more {
+        width: 50%;
+        left: 6%;
+        top: -120%;
+    }
+    .mofe{
+        margin-top: -37px;
+        margin-left: 120px;
+        display: flex;
+    }
+    .cloud-container {
+        width: 80px;
+        height: 80px;
+    }
+    .summer-image3, .summer-image2, .summer-image4{
+        margin-top: 17px;
+    }
+    .weather-info{
+        width: 285px;
+        margin-left: 15px;
+    }
+    .base{
+        width: 135%;
+        margin-right: 50px;
+    }
+   
+    .container{
+        width: 240px;
+    }
+}

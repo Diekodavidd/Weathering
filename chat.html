@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, updateProfile, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, doc, setDoc } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAfPZwwM8Nwx_cC-tNADQdIQF0epEqew20",
+            authDomain: "weather-site-cec60.firebaseapp.com",
+            projectId: "weather-site-cec60",
+            storageBucket: "weather-site-cec60.appspot.com",
+            messagingSenderId: "514429115577",
+            appId: "1:514429115577:web:2ecc8526ec563a6774cf68"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let currentUser = null;
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in, show the authenticated UI
+                currentUser = { uid: user.uid, name: user.displayName || "User" };
+                document.getElementById("get").style.display = "none";
+                document.getElementById("fetch").style.display = "flex";
+                document.getElementById("nav-auth").innerText = `Hi, ${user.displayName || "User"}`;
+            } else {
+                // No user signed in, show login/signup
+                currentUser = null;
+                document.querySelector(".menu-btn").checked = true;
+                document.getElementById("get").style.display = "flex";
+                document.getElementById("fetch").style.display = "none";
+                document.getElementById("nav-auth").innerText = "Sign Up / Login";
+            }
+        });
+        window.signUp = async () => {
+            try {
+                const username = document.getElementById("username").value.trim();
+                const email = document.getElementById("email").value.trim();
+                const password = document.getElementById("password").value.trim();
+
+                if (!username || !email || !password) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                // Validate email format
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(email)) {
+                    alert("Invalid email format.");
+                    return;
+                }
+
+                // Ensure password meets Firebase requirements (at least 6 characters)
+                if (password.length < 6) {
+                    alert("Password must be at least 6 characters long.");
+                    return;
+                }
+
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                // **Update Firebase Authentication Profile with Display Name**
+                await updateProfile(user, { displayName: username });
+
+                // **Save User Data in Firestore**
+                await setDoc(doc(db, "users", user.uid), {
+                    uid: user.uid,
+                    username: username,
+                    email: email,
+                    createdAt: serverTimestamp(),
+                });
+
+                // Force a state refresh
+                await signOut(auth);
+                await signInWithEmailAndPassword(auth, email, password);
+                // const currentUser = { uid: userCredential.user.uid, name: username };
+                // localStorage.setItem("chatUser", JSON.stringify(currentUser));
+                console.log("User created:", currentUser);
+
+                alert(`User Created Successfully! Welcome, ${username}`);
+                location.reload();
+
+                // **Change Signup/Login to "Hi, Username"**
+                document.getElementById("nav-auth").innerText = `Hi, ${username}`;
+                // **Show and Hide Elements**
+                const getDiv = document.getElementById("get");
+                const fetchDiv = document.getElementById("fetch");
+
+                if (getDiv) getDiv.style.display = "none";
+                if (fetchDiv) fetchDiv.style.display = "flex";
+                // Close the menu by unchecking the menu button checkbox
+                document.querySelector(".menu-btn").checked = false;
+            } catch (error) {
+                console.error("Signup Error:", error);
+                alert(`Error: ${error.message}`);
+            }
+        };
+
+        window.signIn = async () => {
+            try {
+                const emailInput = document.getElementById("emaill");
+                const passwordInput = document.getElementById("passwordd");
+
+                if (!emailInput || !passwordInput) {
+                    console.error("Email or Password input field not found!");
+                    return;
+                }
+
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+
+                if (!email || !password) {
+                    alert("Please enter your email and password.");
+                    return;
+                }
+
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+               
+                // Fetch user display name from Firebase
+                let username = user.displayName ? user.displayName : "User";
+
+                const currentUser = { uid: userCredential.user.uid, name: username };
+                localStorage.setItem("chatUser", JSON.stringify(currentUser));
+                console.log(currentUser);
+                
+
+                console.log("User signed in:", user);
+                alert(`Welcome back, ${username}!`);
+                
+                location.reload();
+                document.querySelector(".menu-btn").checked = false;
+                // **Update Navigation Bar**
+                const navAuth = document.getElementById("nav-auth");
+                if (navAuth) {
+                    navAuth.innerText = `Hi, ${username}`;
+                }
+
+                // **Show and Hide Elements**
+                document.getElementById("get").style.display = "none";
+                document.getElementById("fetch").style.display = "flex";
+
+                // **Close the menu**
+                
+               
+
+            } catch (error) {
+                console.error("Sign-in Error:", error);
+                alert(`Error: ${error.message}`);
+            }
+        };
+
+
+        window.logOut = async () => {
+            try {
+                await signOut(auth);
+                alert("Logged out successfully!");
+                document.getElementById("nav-auth").innerText = "Sign Up / Login";
+                document.getElementById("fetch").style.display = "none";
+                document.getElementById("get").style.display = "flex";
+            } catch (error) {
+                console.error("Logout Error:", error);
+                alert(`Error: ${error.message}`);
+            }
+        };
+
+        window.sendSumMessage = async function () {
+            const messageInput = document.getElementById("message-input-summer");
+            console.log(currentUser);
+            
+            if (messageInput.value.trim() !== "" && currentUser) {
+                await addDoc(collection(db, "messages"), {
+                    text: messageInput.value,
+                    username: currentUser.name,
+                    timestamp: serverTimestamp()
+                });
+                messageInput.value = "";
+            }
+        };
+        window.sendWitMessage = async function () {
+            const messageInputt = document.getElementById("message-input-witer");
+            if (messageInputt.value.trim() !== "" && currentUser) {
+                await addDoc(collection(db, "messagesWit"), {
+                    text: messageInputt.value,
+                    username: currentUser.name,
+                    timestamp: serverTimestamp()
+                });
+                messageInputt.value = "";
+            }
+        };
+        window.sendSprMessage = async function () {
+            const messageInpu = document.getElementById("message-input-sprig");
+            if (messageInpu.value.trim() !== "" && currentUser) {
+                await addDoc(collection(db, "messagesSpr"), {
+                    text: messageInpu.value,
+                    username: currentUser.name,
+                    timestamp: serverTimestamp()
+                });
+                messageInpu.value = "";
+            }
+        };
+        window.sendAutMessage = async function () {
+            const messageInputtt = document.getElementById("message-input-autum");
+            if (messageInputtt.value.trim() !== "" && currentUser) {
+                await addDoc(collection(db, "messagesAut"), {
+                    text: messageInputtt.value,
+                    username: currentUser.name,
+                    timestamp: serverTimestamp()
+                });
+                messageInputtt.value = "";
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const chatBox = document.getElementById("chatBox");
+            const messagesRef = collection(db, "messages");
+            const q = query(messagesRef, orderBy("timestamp"));
+
+            try {
+                onSnapshot(q, snapshot => {
+                    chatBox.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        let msgDiv = document.createElement("div");
+                        msgDiv.classList.add("message");
+                        // msgDiv.innerHTML = `<span class='username'>${data.username}:</span> <span class='message-text'>${data.text}</span>`;
+                        msgDiv.innerHTML = `
+                        <div class="hhh">
+                           <div class="spr">
+                                                <h3>${data.username}<span class="sss">:</span></h3>
+                           </div>
+                          <div>
+                                   <p>${data.text}</p>
+                           </div>
+                        </div>`;
+                        chatBox.appendChild(msgDiv);
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                });
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const WchatBox = document.getElementById("witerChatBox");
+            const WmessagesRef = collection(db, "messagesWit");
+            const qa = query(WmessagesRef, orderBy("timestamp"));
+
+            try {
+                onSnapshot(qa, snapshot => {
+                    WchatBox.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        let WmsgDiv = document.createElement("div");
+                        WmsgDiv.classList.add("message");
+                        WmsgDiv.innerHTML = `
+                        <div class="hhh">
+                           <div class="spr">
+                                                <h3>${data.username}<span class="sss">:</span></h3>
+                           </div>
+                          <div>
+                                   <p>${data.text}</p>
+                           </div>
+                        </div>`;
+                        WchatBox.appendChild(WmsgDiv);
+                    });
+                    WchatBox.scrollTop = chatBox.scrollHeight;
+                });
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const SchatBox = document.getElementById("springChatBox");
+            const SmessagesRef = collection(db, "messagesSpr");
+            const qs = query(SmessagesRef, orderBy("timestamp"));
+
+            try {
+                onSnapshot(qs, snapshot => {
+                    SchatBox.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        let SmsgDiv = document.createElement("div");
+                        SmsgDiv.classList.add("message");
+                        SmsgDiv.innerHTML = `
+                        <div class="hhh">
+                           <div class="spr">
+                                                <h3>${data.username}<span class="sss">:</span></h3>
+                           </div>
+                          <div>
+                                   <p>${data.text}</p>
+                           </div>
+                        </div>`;
+                        SchatBox.appendChild(SmsgDiv);
+                    });
+                    SchatBox.scrollTop = chatBox.scrollHeight;
+                });
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const AchatBox = document.getElementById("autumnChatBox");
+            const AmessagesRef = collection(db, "messagesAut");
+            const qx = query(AmessagesRef, orderBy("timestamp"));
+
+            try {
+                onSnapshot(qx, snapshot => {
+                    AchatBox.innerHTML = "";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        let AmsgDiv = document.createElement("div");
+                        AmsgDiv.classList.add("message");
+                        AmsgDiv.innerHTML = `
+                        <div class="hhh">
+                           <div class="spr">
+                                                <h3>${data.username}<span class="sss">:</span></h3>
+                           </div>
+                          <div>
+                                   <p>${data.text}</p>
+                           </div>
+                        </div>`;
+                        AchatBox.appendChild(AmsgDiv);
+                    });
+                    AchatBox.scrollTop = chatBox.scrollHeight;
+                });
+            } catch (error) {
+                console.error("Error fetching messages:", error);
+            }
+        });
+
+
+
+
+
+        window.closeChat = function (season) {
+            document.getElementById(`chatBox-${season}`).style.display = "none";
+        };
+    </script>
+    <script defer src="script.js"></script>
+</head>
+
+<body>
+    <nav class="navigat" id="get">
+        <input type="checkbox" class="menu-btn" id="menu-btn">
+        <label for="menu-btn" class="menu-icon">
+            <span class="nav-icon"></span>
+        </label>
+
+        <div class="profile-container">
+            <span id="nav-autf">Sign Up / Login</span>
+        </div>
+
+        <ul class="menu">
+            <div class="wrapper" id="fave">
+                <div>
+                    <h2>Signup</h2>
+                    <div class="input-field">
+                        <input id="username" type="text" required>
+                        <label>Enter your Username</label>
+                    </div>
+                    <div class="input-field">
+                        <input id="email" type="text" required>
+                        <label>Enter your email</label>
+                    </div>
+                    <div class="input-field">
+                        <input id="password" type="password" required>
+                        <label>Enter your password</label>
+                    </div>
+                    <div class="forget">
+                        <label for="remember">
+                            <input type="checkbox" id="remember">
+                            <p>Remember me</p>
+                        </label>
+                    </div>
+                    <button onclick="signUp()">Sign Up</button>
+                    <div class="register">
+                        <button onclick="toggleDivs()">
+                            <p>Already have an account? Signin</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="wrapper" id="dave">
+                <div>
+                    <h2>Signin</h2>
+                    <div class="input-field">
+                        <input id="emaill" type="text" required>
+                        <label>Enter your email</label>
+                    </div>
+                    <div class="input-field">
+                        <input id="passwordd" type="password" required>
+                        <label>Enter your password</label>
+                    </div>
+                    <div class="forget">
+                        <label for="remember">
+                            <input type="checkbox" id="remember">
+                            <p>Remember me</p>
+                        </label>
+                        <a href="#">Forgot password?</a>
+                    </div>
+                    <button onclick="signIn()">Sign in</button>
+                    <div class="register">
+                        <button onclick="toggleDiv()">
+                            <p>Don't have an account? Signup</p>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </ul>
+    </nav>
+    <nav class="navigate" id="fetch">
+        <input type="checkbox" class="menu-btnf" id="menu-btnf">
+        <label for="menu-btnf" class="menu-iconf">
+            <span class="nav-iconf"></span>
+        </label>
+
+        <div class="profile-container">
+            <span id="nav-auth"></span>
+        </div>
+
+        <ul class="menuf">
+            <div class="wrapper" id="p">
+                <div>
+                    <h2>See You Again</h2>
+                    <button onclick="logOut()">LogOut</button>
+                </div>
+            </div>
+        </ul>
+    </nav>
+    <div class="clouds">
+        <img src="assets/p.png" class="cloud cloud1">
+        <img src="assets/i.png" class="cloud cloud2">
+        <img src="assets/2.png" class="cloud cloud3">
+    </div>
+    <div id="rain-container"></div>
+
+
+    <div class="waq">
+        <div class="aeriel">
+            <div>
+                <div class="image-container summer">
+                    <div class="cloud-container">
+                        <img src="./assets/Summer_Cloud_No_BG.png" alt="Summer Design" class="summer-image"
+                            onclick="updateChat('summer')">
+                    </div>
+                </div>
+                <div class="image-container witer">
+                    <div class="cloud-container">
+                        <img src="./assets/witer.webp" alt="Summer Design" class="summer-image2"
+                            onclick="updateChat('winter')">>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="paul">
+            <div class="looker">
+                <div class="chat-container" style="display: none;">
+                    <div class="hhhh">
+                        <h2 id="fade">Chat App</h2><button class="ddd" onclick="closeChat('summer')">X</button>
+                    </div>
+                    <div class="chat-containe" id="summerChat">
+                        <div id="fader" class="sss">
+                            <p>Here Goes your Summer playlist,<a href="">here</a></p>
+                        </div>
+                        <div class="chat-box" id="chatBox">
+                        </div>
+                        <input type="text" id="message-input-summer" placeholder="Type a message...">
+                        <button onclick="sendSumMessage()">Send</button>
+                    </div>
+                    <div class="chat-containe" id="witerChat">
+                        <div id="fader" class="sss">
+                            <p>Enjoy your Winter playlist, <a href="">here</a></p>
+                        </div>
+                        <div class="chat-box" id="witerChatBox">
+                        </div>
+                        <input type="text" id="message-input-witer" placeholder="Type a message...">
+                        <button onclick="sendWitMessage()">Send</button>
+                    </div>
+                    <div class="chat-containe" id="springChat">
+                        <div id="fader" class="sss">
+                            <p>Enjoy your Spring playlist", <a href="">here</a></p>
+                        </div>
+                        <div class="chat-box" id="springChatBox">
+                        </div>
+                        <input type="text" id="message-input-sprig" placeholder="Type a message...">
+                        <button onclick="sendSprMessage()">Send</button>
+                    </div>
+                    <div class="chat-containe" id="autumnChat">
+                        <div id="fader" class="sss">
+                            <p>Enjoy your Autumn playlist, <a href="">here</a></p>
+                        </div>
+                        <div class="chat-box" id="autumnChatBox">
+                        </div>
+                        <input type="text" id="message-input-autum" placeholder="Type a message...">
+                        <button onclick="sendAutMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+            <div class="ssw">
+                <button class="kasf"><a class="jas" href="index.html">Weather Room</a></button>
+            </div>
+        </div>
+        <div class="aeriel">
+            <div>
+                <div class="image-container sprig">
+                    <div class="cloud-container">
+                        <img src="./assets/sprig.webp" alt="Summer Design" class="summer-image3"
+                            onclick="updateChat('spring')">
+                    </div>
+                </div>
+                <div class="image-container autum">
+                    <div class="cloud-container">
+                        <img src="./assets/autum.webp" alt="Summer Design" class="summer-image4"
+                            onclick="updateChat('autumn')">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const div1 = document.getElementById("fave");
+        const div2 = document.getElementById("dave");
+        function toggleDivs() {
+
+
+            if (div1 && div2) {
+                div1.style.display = "none";  // Hide div1
+                div2.style.display = "flex";  // Show div2
+            } else {
+                console.warn("One or both divs not found!");
+            }
+        }
+        function toggleDiv() {
+
+            if (div1 && div2) {
+                div1.style.display = "flex";  // Hide div1
+                div2.style.display = "none";  // Show div2
+            } else {
+                console.warn("One or both divs not found!");
+            }
+        }
+    </script>
+</body>
+
+</html>
