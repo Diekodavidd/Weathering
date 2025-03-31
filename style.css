@@ -159,10 +159,32 @@ left: 0px;
     text-align: center;
     margin-left: 5px;
     backface-visibility: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
     height: 300px;
     transition: opacity 0.3s ease-in-out;
 }
-
+/* width */
+.weather-info::-webkit-scrollbar {
+    width: 5px;
+  }
+  
+  /* Track */
+  .weather-info::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey; 
+    border-radius: 10px;
+  }
+   
+  /* Handle */
+  .weather-info::-webkit-scrollbar-thumb {
+    background: rgb(0, 0, 0); 
+    border-radius: 10px;
+  }
+  
+  /* Handle on hover */
+  .weather-info::-webkit-scrollbar-thumb:hover {
+    background: #a5a5a5; 
+  }
 .weather-ihnfo {
     position: absolute;
     top: -100px;
@@ -295,7 +317,7 @@ left: 0px;
 .weather-info img, .weather-ihnfo img {
     /* width: 80px; */
     /* height: 80px; */
-    margin: 10px 0;
+    margin: 0px 10px;
 }
 .leff{
     text-align: left;

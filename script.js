@@ -88,7 +88,9 @@ async function getWeather(city) {
         const data = await response.json();
         console.log(data);
         
+        
         updateWeatherUI(data);
+        getForecast(city); // Ensure forecast updates
     } catch (error) {
         alert(error.message);
     }
@@ -161,27 +163,44 @@ async function getForecast(city) {
 }
 
 function updateForecastUI(data) {
+    const futureForecast = document.getElementById("future-forecast");
+    if (!futureForecast) {
+        console.error("Error: future-forecast element not found.");
+        return;
+    }
+
     futureForecast.innerHTML = "<h3>Future Days Forecast</h3>";
-    
+    futureForecast.style.display = "block"; // Ensure it's visible
+
     const forecastByDay = {};
 
     data.list.forEach((item) => {
-        const date = new Date(item.dt_txt).toLocaleDateString("en-US", { weekday: "long" });
-        if (!forecastByDay[date]) {
-            forecastByDay[date] = item;
+        const dateObj = new Date(item.dt_txt);
+        const day = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+
+        if (!forecastByDay[day]) {
+            forecastByDay[day] = {
+                temps: [],
+                icon: item.weather[0].icon,
+                desc: item.weather[0].description
+            };
         }
+        forecastByDay[day].temps.push(item.main.temp);
     });
 
     Object.keys(forecastByDay).slice(0, 5).forEach((day) => {
         const forecast = forecastByDay[day];
-        const iconCode = forecast.weather[0].icon;
-        const temp = Math.round(forecast.main.temp);
-        const desc = forecast.weather[0].description;
+        const avgTemp = Math.round(forecast.temps.reduce((a, b) => a + b, 0) / forecast.temps.length);
+        const iconCode = forecast.icon;
+        const desc = forecast.desc;
 
-        futureForecast.innerHTML += `<div class="day">${day} - <img src="https://openweathermap.org/img/wn/${iconCode}.png" alt="${desc}"> ${desc} - ${temp}°C</div>`;
+        futureForecast.innerHTML += `
+            <div class="day">
+                ${day} - <img src="https://openweathermap.org/img/wn/${iconCode}.png" alt="${desc} width="20px" height="20px"> 
+                ${desc} - ${avgTemp}°C
+            </div>`;
     });
 }
-
 function updateChat(season) {
     const chatHeader = document.getElementById("fade");
     const SumCon = document.getElementById("summerChat");
